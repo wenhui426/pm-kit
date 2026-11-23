@@ -1,0 +1,16 @@
+{
+  "kind": "template",
+  "id": "built-in:standard-prd",
+  "name": "标准产品 PRD",
+  "version": "1.0.0",
+  "status": "active",
+  "extends": [],
+  "triggers": ["写 PRD", "需求文档", "审查 PRD", "产品需求"],
+  "output_type": "prd",
+  "formats": ["md"],
+  "applies_to": ["新产品", "功能需求", "产品改版", "增量需求"],
+  "required_fields": ["背景与问题", "目标与排除项", "用户与场景", "产品方案", "功能需求", "业务规则", "异常边界", "验收标准"],
+  "files": {
+    "template_rules": "../../../../references/prd-workflow.md"
+  }
+}

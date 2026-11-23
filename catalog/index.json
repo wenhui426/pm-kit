@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-10-11T06:58:06.388128+00:00",
+  "schema_validated": true,
+  "count": 5,
+  "resources": [
+    {
+      "manifest": "catalog/built-in/component-libraries/native-html/manifest.json",
+      "id": "built-in:native-html",
+      "kind": "component-library",
+      "name": "原生单文件 HTML",
+      "version": "1.0.0",
+      "status": "active",
+      "triggers": [
+        "单文件 HTML",
+        "可直接打开",
+        "无构建原型",
+        "评审原型"
+      ],
+      "valid": true
+    },
+    {
+      "manifest": "catalog/built-in/scenarios/general-product/manifest.json",
+      "id": "built-in:general-product",
+      "kind": "scenario",
+      "name": "通用数字产品",
+      "version": "1.0.0",
+      "status": "active",
+      "triggers": [
+        "产品设计",
+        "功能设计",
+        "后台系统",
+        "移动产品",
+        "网页产品"
+      ],
+      "valid": true
+    },
+    {
+      "manifest": "catalog/built-in/templates/review-report/manifest.json",
+      "id": "built-in:review-report",
+      "kind": "template",
+      "name": "产品评审与验收报告",
+      "version": "1.0.0",
+      "status": "active",
+      "triggers": [
+        "产品走查",
+        "设计验收",
+        "问题报告",
+        "可用性检查"
+      ],
+      "valid": true
+    },
+    {
+      "manifest": "catalog/built-in/templates/single-file-html/manifest.json",
+      "id": "built-in:single-file-html",
+      "kind": "template",
+      "name": "单文件 HTML 交互原型",
+      "version": "1.0.0",
+      "status": "active",
+      "triggers": [
+        "HTML 原型",
+        "可点击原型",
+        "直接打开",
+        "评审 Demo"
+      ],
+      "valid": true
+    },
+    {
+      "manifest": "catalog/built-in/templates/standard-prd/manifest.json",
+      "id": "built-in:standard-prd",
+      "kind": "template",
+      "name": "标准产品 PRD",
+      "version": "1.0.0",
+      "status": "active",
+      "triggers": [
+        "写 PRD",
+        "需求文档",
+        "审查 PRD",
+        "产品需求"
+      ],
+      "valid": true
+    }
+  ],
+  "errors": []
+}

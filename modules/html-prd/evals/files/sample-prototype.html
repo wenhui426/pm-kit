@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工单管理（示例原型）</title>
+<style>
+  :root { --color-primary:#2563eb; --color-bg:#f7f8fa; --color-border:#e5e7eb; --color-text-main:#1f2328; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif; color:var(--color-text-main); background:var(--color-bg); }
+  header { padding:12px 20px; background:#fff; border-bottom:1px solid var(--color-border); font-weight:600; }
+  nav { display:flex; gap:8px; padding:12px 20px; }
+  nav a { padding:6px 12px; border:1px solid var(--color-border); border-radius:6px; text-decoration:none; color:var(--color-text-main); background:#fff; }
+  main { padding:0 20px 24px; }
+  section { display:none; background:#fff; border:1px solid var(--color-border); border-radius:8px; padding:16px; }
+  section.active { display:block; }
+  h1 { font-size:18px; margin:0 0 12px; }
+  table { width:100%; border-collapse:collapse; margin-top:12px; }
+  th,td { text-align:left; padding:8px; border-bottom:1px solid var(--color-border); }
+  .tag { display:inline-block; padding:2px 8px; border-radius:10px; font-size:12px; background:#eef2ff; color:var(--color-primary); }
+</style>
+</head>
+<body>
+<header>工单管理</header>
+<nav>
+  <a href="#list">工单列表</a>
+  <a href="#detail">工单详情</a>
+</nav>
+<main>
+  <section data-view="list">
+    <h1>工单列表</h1>
+    <table>
+      <thead><tr><th>单号</th><th>标题</th><th>报修人</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>WO-1001</td><td>三楼水管漏水</td><td>张伟</td><td><span class="tag">待处理</span></td></tr>
+        <tr><td>WO-1002</td><td>空调不制冷</td><td>李娜</td><td><span class="tag">处理中</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <section data-view="detail">
+    <h1>工单详情 · WO-1001</h1>
+    <p>标题：三楼水管漏水</p>
+    <p>报修人：张伟</p>
+    <p>问题描述：三楼东侧卫生间水管接口渗水，地面已积水。</p>
+    <p>处理记录：</p>
+    <ol><li>10:12 张伟提交报修</li><li>10:30 派单给工程部</li></ol>
+  </section>
+</main>
+<script>
+  const views = [...document.querySelectorAll('section[data-view]')];
+  function route() {
+    const name = (location.hash || '#list').slice(1);
+    const known = views.some(view => view.dataset.view === name) ? name : 'list';
+    views.forEach(view => view.classList.toggle('active', view.dataset.view === known));
+  }
+  window.addEventListener('hashchange', route);
+  route();
+</script>
+</body>
+</html>

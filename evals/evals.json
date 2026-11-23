@@ -1,0 +1,359 @@
+{
+  "skill_name": "pm-kit",
+  "evals": [
+    {
+      "id": 1,
+      "name": "combined-planning-prd-and-prototype",
+      "prompt": "我们准备给连锁门店做一个总部巡店问题管理功能。区域经理会在手机上记录问题，总部运营在电脑上分派和追踪整改。请先帮我梳理 MVP，再输出一份 PRD 和一个可以直接打开评审的 HTML 原型。",
+      "expected_output": "识别为产品规划、PRD、交互设计和单文件 HTML 的组合任务；先统一范围，再生成相互一致的 PRD 与可交互原型；不创建 React 工程。",
+      "files": [],
+      "expected_absent_files": ["**/package.json", "**/vite.config.*"],
+      "assertions": [
+        "识别为规划 + PRD + 交互设计 + 单文件 HTML 的组合任务，并说明调用顺序、跳过项和决策点",
+        "先统一需求范围再生成产物，没有跳过范围确认直接出原型",
+        "PRD 与原型使用同一组页面名称、范围和验收标准",
+        "产出可离线打开的单文件 HTML，没有创建 React 工程",
+        "交付前做了一次需求与原型的一致性检查"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "existing-html-review-and-revision",
+      "prompt": "我会提供一份现有后台页面的 HTML。请检查信息架构、表格筛选、批量操作和异常状态，输出问题报告，并在不改变现有技术形态的前提下生成一个修订版 HTML。",
+      "expected_output": "读取 HTML 及本地依赖，完成分级走查；保留原始文件；生成修订版 HTML 和回归结果，不擅自转换为 React。",
+      "files": [],
+      "assertions": [
+        "先读取入口 HTML 及其引用的本地 CSS、JavaScript 和数据文件，再开始检查",
+        "输出分级问题清单，覆盖信息架构、表格筛选、批量操作和异常状态",
+        "保留原始文件不动，另生成修订版 HTML",
+        "没有擅自把技术形态转为 React 工程",
+        "对修订版做了回归检查并说明验证结果"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "meeting-notes-to-markdown-requirements",
+      "prompt": "下面是会议纪要和客服反馈。请整理成需求范围、主流程、异常流程和验收标准，只输出 Markdown 文档，暂时不要做页面。",
+      "expected_output": "区分会议决策、反馈事实和推断；输出范围、流程、异常和验收文档；遵守不生成页面的要求。",
+      "files": [],
+      "assertions": [
+        "区分会议决策、客服反馈事实和推断三类信息，并标明来源",
+        "输出需求范围、主流程、异常流程和验收标准四项",
+        "只输出 Markdown 文档，没有生成任何页面或原型文件",
+        "信息缺口就地标注，没有用虚构内容补全"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "explicit-react-project",
+      "prompt": "把已经确认的订单审核 PRD 做成 React + TypeScript 工程，使用 Ant Design，包含列表、详情、审核弹窗、权限控制和模拟接口，开发同事会继续接手。",
+      "expected_output": "识别明确的 React 工程要求，生成组件化项目，提供运行说明，完成类型检查、构建和关键流程验证，并标注模拟接口边界。",
+      "files": [],
+      "expected_files": ["**/package.json"],
+      "assertions": [
+        "识别为用户明确要求 React + TypeScript 工程，而不是单文件原型",
+        "生成组件化工程并给出运行说明与依赖说明",
+        "完成类型检查、构建和关键流程检查，并如实报告结果",
+        "标注模拟接口与真实接口的边界",
+        "包含列表、详情、审核弹窗和权限控制"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "read-only-issue-list",
+      "prompt": "只帮我看看这张会员后台截图的信息层级和操作问题，给问题清单就行，不需要改页面，也不要写 PRD。",
+      "expected_output": "选择 analyze-input 和 review-validate；明确跳过规划、PRD、交互设计和原型生成；只输出带证据和严重度的问题清单。",
+      "files": [],
+      "assertions": [
+        "选用分析与走查（写成 analyze-input、review-validate 或等价的中文说明都算通过），并明确说明跳过了规划、PRD、交互设计和原型生成",
+        "只输出带证据和严重度的问题清单",
+        "没有修改页面，也没有生成 PRD 或原型文件",
+        "说明截图里的哪些判断属于推断而非已确认事实"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "faithful-restore-versus-redesign-gate",
+      "prompt": "按这张旧版首页一比一还原，同时把导航和购买流程全面优化，最后只交付一个 HTML。",
+      "expected_output": "识别保真还原与产品改版的路径冲突；提供还原版、改版版或双版本路径及影响，等待用户选择后再生成。",
+      "files": [],
+      "assertions": [
+        "识别出保真还原与产品改版是两条会改变结果的路径，进入决策门禁",
+        "列出还原版、改版版或双版本的可执行路径，并说明各自影响",
+        "给出的选项不超过三条，并明确给出推荐及理由（推荐项排在最前或明确标注都算通过）",
+        "在用户选择之前没有生成任何版本"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "single-file-versus-react-gate",
+      "prompt": "做一个可以直接发给领导打开的原型，开发同事也希望在这个基础上继续写。",
+      "expected_output": "识别单文件 HTML 与 React 工程的交付冲突；说明两种技术形态及双交付路径，让用户决定。",
+      "files": [],
+      "assertions": [
+        "识别出单文件 HTML 与 React 工程的交付冲突，进入决策门禁",
+        "说明两种技术形态的差异、限制和适用场景",
+        "提供双交付路径作为可选项",
+        "没有在用户确认前擅自选择技术形态"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "archive-reusable-resources",
+      "prompt": "这个门店巡检项目已经验收了，把其中可复用的业务规则、PRD 结构和页面处理方式沉淀下来，以后同类项目自动参考。",
+      "expected_output": "把内容分别归类为场景、模板和案例；先脱敏并展示归档清单，用户确认后写入 catalog/local，初始状态为 draft，并运行校验。",
+      "files": [],
+      "assertions": [
+        "把可复用内容分别归类为场景、模板和案例，并说明各自适用范围",
+        "归档前列出清单、适用范围和需要脱敏的内容，并等待用户确认",
+        "写入 catalog/local/，初始状态为 draft",
+        "运行目录校验并把结果告知用户（给出通过结论或失败原因都算），未通过时不声称已通过",
+        "没有把未脱敏的真实项目信息、账号或客户数据写入资源"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "scoped-incremental-change",
+      "prompt": "现有订单后台只需要给列表加一个退款状态筛选，其他页面和公共组件都不要动。",
+      "expected_output": "选择 analyze-input、build-prototype、review-validate 的局部修改路径；先检查筛选是否影响数据结构或公共逻辑，范围可控时只修改相关页面并回归验证。",
+      "files": [],
+      "assertions": [
+        "选择 analyze-input → build-prototype → review-validate 的局部修改路径",
+        "先判断筛选是否影响数据结构或公共逻辑，再决定改动范围",
+        "只修改订单列表相关文件，没有改动其他页面和公共组件",
+        "完成后做回归验证并说明影响范围"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "exploratory-ui-comparison",
+      "prompt": "订单审核详情页的布局还没定。请做三个结构差异明显的 UI 方案，放在一个 HTML 中切换，只用于比较信息层级和主要操作，暂时不要写 PRD。",
+      "expected_output": "识别为探索型 UI 原型；围绕一个未决问题提供 2～3 种结构方案并可切换，标明模拟内容和比较重点；不生成 React，也不把探索稿当成交付定稿。",
+      "files": [],
+      "assertions": [
+        "识别为探索型原型而不是交付型",
+        "在同一个 HTML 内提供 2～3 个方案并可切换，差异体现在布局或信息层级而不只是配色",
+        "标明哪些内容是模拟数据，以及本次要回答的设计问题",
+        "没有生成 React 工程，也没有把探索稿称为最终交付",
+        "没有写 PRD"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "business-state-exploration",
+      "prompt": "退款审核状态规则还没想清楚，尤其是驳回后能否重新提交、处理中能否撤回。做个可点击的 HTML 帮我试这些状态。",
+      "expected_output": "识别为业务状态探索；先列出待验证规则并制作单文件状态演示，支持自由操作及主路径、边界和非法操作场景；状态用业务语言展示，不连接真实后端，交互后记录用户选定规则。",
+      "files": [],
+      "assertions": [
+        "识别为业务状态探索，先列出待验证的状态规则",
+        "产出单文件 HTML，支持自由操作并覆盖主路径、边界和非法操作",
+        "状态变化用业务术语解释，每次操作后展示完整的相关状态",
+        "没有连接真实后端或持久化数据",
+        "记录了用户最终选定的规则"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "terminology-conflict",
+      "prompt": "这几份材料里‘退款’、‘退货退款’和‘退款单’混着用。先分析它们分别指什么，哪些地方需要我定。",
+      "expected_output": "先依据材料标出各术语的来源、用法和冲突，不擅自认定同义；只询问会影响当前任务的用户决策，若项目需持续协作则建议在项目目录建立词汇表并在 project.json 的 glossary_path 记录路径。",
+      "files": [],
+      "assertions": [
+        "先依据材料列明各术语的来源、用法和冲突，没有擅自认定同义",
+        "只就影响当前任务的术语定义向用户提问",
+        "若判断需要持续协作，建议在项目目录建立词汇表并把该路径记入项目记录（字段名见记录契约）",
+        "没有把推断的词义当成已确认结论"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "clarify-then-plan-then-design",
+      "prompt": "帮我做一个退款申请的可点击页面。现在只有一句想法，退款资格、审批角色和驳回后的处理都没定；这些规则定完后，请梳理方案并汇总成交互稿。",
+      "expected_output": "先用 clarify-requirements 确认影响结果的业务选择，再按确认结果运行 plan-product 与 design-interaction；如用户需要可点击产物再运行 build-prototype。阶段间传递决策和产物，不把一句想法直接当作已确认需求。",
+      "files": [],
+      "assertions": [
+        "先用 clarify-requirements 就退款资格、审批角色、驳回后处理等影响结果的业务选择提问",
+        "在用户确认后依次运行 plan-product 与 design-interaction",
+        "需要可点击产物时才运行 build-prototype",
+        "阶段之间传递已确认决策，没有把一句想法当作已确认需求"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "project-template-takes-precedence",
+      "prompt": "这份 PRD 已经评审确认。请直接生成一个单文件 HTML 评审原型，沿用本项目 .pm-kit/templates/review-prototype 的格式，不要重新规划需求。",
+      "expected_output": "跳过澄清、规划和 PRD 编写；读取项目模板（不存在时明确告知用户并请其提供或改用内置模板）并按其结构生成单文件 HTML，说明采用的模板和覆盖项，完成浏览器交互检查。",
+      "files": [],
+      "assertions": [
+        "跳过澄清、规划和 PRD 编写，直接进入原型生成",
+        "按模板优先级查找 .pm-kit/templates/review-prototype：找到就按它的结构生成并说明采用的模板路径；不存在就明确告知用户并请其提供或改用内置模板，不假装按一个不存在的模板生成",
+        "产出单文件 HTML，并说明采用的模板路径和本轮覆盖项",
+        "完成浏览器交互检查并报告结果"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "make-prd-six-step-module",
+      "prompt": "请严格按 make-prd 的六步流程把这个想法做成正式 PRD，每个需要确认的阶段都停下来等我。",
+      "expected_output": "选择内嵌 make-prd 模块，读取 modules/make-prd/procedure.md 并遵守六步与确认点；不以简明 write-prd 流程替代。",
+      "files": [],
+      "expected_files": ["**-01-*.md", "**-02-*.md", "**-03-*.md", "**-04-*.md"],
+      "assertions": [
+        "选择内嵌 make-prd 模块，并读取 modules/make-prd/procedure.md",
+        "遵守六步流程与逐阶段确认点，没有用简明 write-prd 流程替代",
+        "产出 01～04 编号文件并保持命名规范",
+        "每个需要确认的阶段停下来等待用户确认，没有连续输出"
+      ]
+    },
+    {
+      "id": 16,
+      "name": "cross-project-isolation",
+      "prompt": "甲客户退款项目的 PRD 已做完。现在另做乙客户的退款后台，业务词很像，但两家公司规则不同。请先梳理需求。",
+      "expected_output": "识别为新项目，建立不同 project_id；不把甲客户的退款资格、权限、状态和未决事项带入乙客户。只从乙客户材料提取事实，归属不明时先确认。",
+      "files": [],
+      "assertions": [
+        "识别为新项目并建立不同的 project_id",
+        "只从乙客户材料提取事实，没有引用甲客户的退款资格、权限、状态或未决事项",
+        "没有因为业务词相似而混用项目上下文",
+        "归属不明时先向用户确认，而不是自行判断"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "same-project-new-task",
+      "prompt": "继续甲客户项目，但这次做订单列表改版，不改上次退款 PRD。列表筛选规则可以参考项目里已经确认的订单状态定义。",
+      "expected_output": "沿用项目 ID、新建任务 ID；读取项目级已确认订单状态，不继承退款任务草稿和未决事项；需要引用上次产物时记录具体版本，限定本次修改范围。",
+      "files": [],
+      "assertions": [
+        "沿用甲客户的项目 ID，并为订单列表改版新建 task_id",
+        "只读取项目级已确认的订单状态定义",
+        "没有继承退款任务的草稿规则和未决事项",
+        "引用上次产物时记录具体版本，并限定本次修改范围"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "rule-change-impact-propagation",
+      "prompt": "退款规则改了：驳回后不再允许重新提交。请更新需求，并看看上轮做的 PRD、原型和验收项哪些要跟着改。",
+      "expected_output": "先核对所属项目任务和旧规则版本；用户确认新规则后追加版本，沿产物依赖查找 PRD、原型和验收项，标记旧产物需复查，只修改受影响文件并完成回归。",
+      "files": [],
+      "assertions": [
+        "先核对所属项目任务和旧规则版本，再记录变更",
+        "用户确认新规则后追加 revision，而不是改写旧版本",
+        "沿产物依赖找出受影响的 PRD、原型和验收项并标记为需复查（needs_review）",
+        "只修改受影响的文件并完成回归检查",
+        "旧版本记录保留，没有覆盖或删除"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "resume-from-breakpoint",
+      "prompt": "回到之前的门店巡检任务继续做原型。上次做完需求范围就停了，这次从断点继续，不要重新访谈。",
+      "expected_output": "根据项目和任务 ID 读取该任务的轮次记录、规则版本和实际文件；核对断点后继续原型阶段，不读取无关任务草稿，不把未确认范围当成已确认。",
+      "files": [],
+      "assertions": [
+        "按项目与任务 ID 读取该任务的轮次记录、规则版本和实际产物",
+        "核对断点后从原型阶段继续，没有重做访谈或重跑已完成阶段",
+        "没有读取无关任务的草稿",
+        "没有把未确认范围当成已确认"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "catalog-script-actually-runs",
+      "prompt": "我想把门店巡检项目里可复用的东西沉淀成场景包。先给我建一个门店巡检的场景包骨架，让我看看目录长什么样；然后告诉我怎么校验，并实际跑一次校验把结果给我。",
+      "expected_output": "用 scripts/catalog_manager.py scaffold 在 catalog/local/scenarios/ 下建 draft 场景包，包含 overview/roles/workflow/states/risks/validation 六个文件；运行 validate 并如实报告退出码与输出，未通过时不伪造通过。",
+      "files": [],
+      "expected_files": [
+        "catalog/local/scenarios/*/overview.md",
+        "catalog/local/scenarios/*/roles.md",
+        "catalog/local/scenarios/*/workflow.md",
+        "catalog/local/scenarios/*/states.md",
+        "catalog/local/scenarios/*/risks.md",
+        "catalog/local/scenarios/*/validation.md"
+      ],
+      "assertions": [
+        "使用 scripts/catalog_manager.py scaffold 创建场景包，而不是手工拼目录",
+        "生成的场景包包含 overview、roles、workflow、states、risks、validation 六个文件，与使用说明第 8.3 节一致",
+        "新资源的 status 为 draft、version 为 0.1.0",
+        "实际运行了 catalog_manager.py validate 并报告退出码",
+        "校验未通过时如实说明错误内容，没有声称已通过"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "record-validator-actually-runs",
+      "prompt": "这个项目的跨轮记录我按契约写好了，放在 pm-kit-output 下。你校验一遍，把发现的问题列出来，先不要改文件。",
+      "expected_output": "运行 scripts/validate_records.py，报告退出码与错误清单；保持只读，不修改任何记录文件；说明校验器只检查结构与已登记引用，不判断业务规则是否正确。",
+      "files": [],
+      "assertions": [
+        "实际运行 scripts/validate_records.py，而不是只做人工目检",
+        "报告退出码，并在非零时逐条列出错误",
+        "保持只读，没有修改任何记录文件",
+        "说明校验器只检查结构与引用，不判断业务规则是否正确"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "multi-page-fast-prototype-stays-lightweight",
+      "prompt": "这份已确认的 PRD 有 6 个页面。我只要一个明天能打开评审的 HTML，不需要单独维护页面规格，也不用逐页等我验收。",
+      "expected_output": "页面数量不单独触发 prd-html；使用简明原型路径生成单文件 HTML，检查关键流程和页面一致性。",
+      "files": [],
+      "assertions": [
+        "没有仅因 6 个页面就自动进入 prd-html 的目录、规范选型和逐页验收流程",
+        "按已确认 PRD 生成可离线打开的单文件 HTML",
+        "覆盖跨页关键流程并报告浏览器检查结果"
+      ]
+    },
+    {
+      "id": 23,
+      "name": "html-prd-explicit-output-is-not-reconfirmed",
+      "prompt": "用这份现有 HTML 整理 PRD。只要 PRD.md，输出到我指定的 E:\\project\\prd-review，页面说明按默认模板。",
+      "expected_output": "html-prd 采用本轮已明确的输出方式和目录，不再次要求用户在三种输出方式中选择；检查现有 HTML 后推进页面清单确认。",
+      "files": [],
+      "assertions": [
+        "选用 html-prd 并采用用户已指定的仅 PRD.md 输出方式",
+        "没有为已明确的输出方式、目录和默认模板重复等待确认",
+        "仍检查 HTML 输入及依赖，并在页面清单和逐页正文处遵守模块确认要求"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "visual-reference-versus-new-design",
+      "prompt": "按这张后台截图还原一个可点击页面，截图里的品牌名和客户数据不要带进去；缺失的空状态可以补。",
+      "expected_output": "将截图用作还原范围内的视觉依据，不重新发起视觉规范选择；不复制品牌和真实数据，新增空状态单独标注。",
+      "files": [],
+      "assertions": [
+        "将截图作为用户指定的视觉依据，没有为同一还原要求重复询问风格",
+        "没有复制截图里的品牌名、客户数据或推断的业务规则",
+        "新增空状态与截图可观察内容区分标注"
+      ]
+    },
+    {
+      "id": 25,
+      "name": "one-shot-multiple-deliverables-no-persistent-project",
+      "prompt": "这是一次性讨论。根据下面已确认的需求，给我一份简短 PRD 和一个可打开的 HTML 原型；交完就结束，不需要后续项目记录。",
+      "expected_output": "完成 PRD 与原型的一致性检查；不因两份交付物自动建立 pm-kit-output 项目目录。",
+      "files": [],
+      "expected_absent_files": ["**/pm-kit-output/projects.json", "**/pm-kit-output/*/project.json"],
+      "assertions": [
+        "生成 PRD 与可打开的 HTML，并核对两者范围、流程和名称一致",
+        "没有仅因交付物数量建立持久项目与任务记录",
+        "本轮仍交代采用的需求依据、关键决定和未验证项"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "multi-page-maintained-spec-uses-prd-html",
+      "prompt": "这份 PRD 已确认。我要做长期维护的 8 页后台原型，每页规格也要交付，后续会增删页面；请逐页给我验收，先告诉我会怎么推进。",
+      "expected_output": "选用 prd-html 专项模块，说明需要的原型目录、设计规范选型和逐页验收节奏；读取完整模块流程，不用简明原型流程代替。",
+      "files": [],
+      "assertions": [
+        "依据页面规格交付、长期维护和逐页验收选择 prd-html，而非只依据 8 页数量",
+        "开工前说明原型目录、设计规范选型和逐页验收要求",
+        "读取并遵守模块 procedure.md，没有用简明 build-prototype 代替",
+        "在目录与规范尚未确定时没有开始生成页面"
+      ]
+    }
+  ]
+}

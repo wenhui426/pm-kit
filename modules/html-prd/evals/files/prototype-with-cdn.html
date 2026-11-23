@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>工单管理（依赖外部 CDN）</title>
+  <!-- 这个原型看起来能被处理（hash 路由、页面结构完整），但样式和脚本都指向 CDN，
+       无法可靠离线内联成自包含单文件——正是单文件交付要拒绝的那类输入。 -->
+  <link rel="stylesheet" href="https://cdn.example.com/antd.min.css">
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; }
+    nav { display: flex; gap: 12px; padding: 12px; border-bottom: 1px solid #d9d9d9; }
+    .view { display: none; padding: 24px; }
+    .view.active { display: block; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="#list">工单列表</a>
+    <a href="#detail">工单详情</a>
+  </nav>
+  <section id="list" class="view active">
+    <h1>工单列表</h1>
+    <p>表格由 CDN 上的组件渲染，页面自身没有样式实现。</p>
+  </section>
+  <section id="detail" class="view">
+    <h1>工单详情</h1>
+    <p>抽屉与时间线同样来自 CDN 组件。</p>
+  </section>
+  <script src="https://cdn.example.com/antd.min.js"></script>
+  <script>
+    function route() {
+      var hash = location.hash || '#list';
+      var views = document.querySelectorAll('.view');
+      for (var i = 0; i < views.length; i += 1) {
+        views[i].classList.toggle('active', '#' + views[i].id === hash);
+      }
+    }
+    window.addEventListener('hashchange', route);
+    route();
+  </script>
+</body>
+</html>

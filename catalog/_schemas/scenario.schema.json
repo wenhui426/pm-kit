@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pm-kit Scenario Package",
+  "type": "object",
+  "required": ["kind", "id", "name", "version", "status", "triggers", "platforms", "capabilities", "files"],
+  "properties": {
+    "kind": { "const": "scenario" },
+    "id": { "type": "string", "pattern": "^(built-in|local):[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "status": { "enum": ["draft", "reviewed", "active", "deprecated"] },
+    "extends": { "type": "array", "items": { "type": "string" }, "maxItems": 1, "default": [] },
+    "triggers": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "platforms": { "type": "array", "items": { "enum": ["web", "mobile", "desktop", "cross-platform"] } },
+    "capabilities": { "type": "array", "items": { "type": "string" } },
+    "files": { "type": "object", "additionalProperties": { "type": "string" }, "minProperties": 1 }
+  },
+  "additionalProperties": true
+}

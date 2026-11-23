@@ -1,0 +1,16 @@
+{
+  "kind": "template",
+  "id": "built-in:single-file-html",
+  "name": "单文件 HTML 交互原型",
+  "version": "1.0.0",
+  "status": "active",
+  "extends": [],
+  "triggers": ["HTML 原型", "可点击原型", "直接打开", "评审 Demo"],
+  "output_type": "prototype",
+  "formats": ["html"],
+  "applies_to": ["Web 原型", "移动端原型", "多视图演示", "截图还原"],
+  "required_fields": ["页面蓝图", "主流程", "模拟数据", "关键交互", "异常状态", "验证结果"],
+  "files": {
+    "template_rules": "../../../../references/prototype-html.md"
+  }
+}

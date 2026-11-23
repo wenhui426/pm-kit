@@ -1,0 +1,16 @@
+{
+  "kind": "template",
+  "id": "built-in:review-report",
+  "name": "产品评审与验收报告",
+  "version": "1.0.0",
+  "status": "active",
+  "extends": [],
+  "triggers": ["产品走查", "设计验收", "问题报告", "可用性检查"],
+  "output_type": "review-report",
+  "formats": ["md"],
+  "applies_to": ["需求审查", "产品走查", "无障碍", "设计 QA", "发布验收"],
+  "required_fields": ["严重度", "位置", "证据", "问题", "影响", "建议", "验收方式"],
+  "files": {
+    "template_rules": "../../../../references/review-validation.md"
+  }
+}

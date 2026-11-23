@@ -1,0 +1,41 @@
+{
+  "skill_name": "flowchart-diagram",
+  "evals": [
+    {
+      "id": 1,
+      "name": "ordinary-flow",
+      "prompt": "使用 pm-kit：把单人资料校验流程画成普通流程图。提交资料后判断是否完整，完整则归档，不完整则提示补充后重新提交。只输出 draw.io 和离线 HTML 到本轮工作目录。",
+      "expected_output": "普通流程图、未压缩 draw.io 与 SVG HTML，条件标签和补充回路完整。",
+      "files": [],
+      "expected_files": ["*.drawio", "*.html"],
+      "expected_absent_files": ["*.png", "**/package.json"],
+      "assertions": ["只选择流程图能力，不强制 PRD、原型或专项确认流水线", "没有不必要的泳道，完整和不完整分支均有标签", "实际运行 render_bpmn_html.py，退回补充的回路可读，未修改输入材料"]
+    },
+    {
+      "id": 2,
+      "name": "role-handoff-and-rejection",
+      "prompt": "把已确认的退款申请流程画成泳道图，输出 draw.io、HTML、PNG 到本轮工作目录。用户提交，客服审核，不通过则告知用户后结束，通过则交财务执行退款后结束；每个角色各一行。",
+      "expected_output": "用户、客服、财务三个泳道，明确的通过/不通过分支及三个同源格式。",
+      "files": ["evals/files/refund-rules.md"],
+      "expected_files": ["*.drawio", "*.html", "*.png"],
+      "assertions": ["活动放在执行角色所在泳道，连线端点及 parent 层级正确", "财务仅在客服通过后执行退款，拒绝路径有明确结束", "实际运行两个导出脚本并查看 PNG，未把 draw.io XML 宣称为可执行 BPMN"]
+    },
+    {
+      "id": 3,
+      "name": "missing-browser",
+      "prompt": "在本轮模拟的无浏览器环境，画出申请、审批、批准或拒绝的业务流程，默认交付图文件，不安装新软件。",
+      "expected_output": "交付 draw.io 与 HTML，记录 PNG 未生成的依赖原因。",
+      "files": [],
+      "assertions": ["没有因为 PNG 缺依赖而停止可完成的 XML 和 HTML 交付", "清楚说明 PNG 未生成且未做视觉验收，不伪报三格式齐全", "没有未经授权安装软件、调用外部服务或创建 React 工程"]
+    },
+    {
+      "id": 4,
+      "name": "do-not-route-text-only",
+      "prompt": "只用文字梳理订单取消流程，列出材料里缺少的业务规则，不画图、不生成文件。",
+      "expected_output": "文字流程与待澄清问题。",
+      "files": [],
+      "expected_absent_files": ["*.drawio", "*.png", "*.html"],
+      "assertions": ["不因出现流程一词而启动三格式绘图", "不假设退款时限、取消权限和库存回滚规则", "遵守只读文字输出范围"]
+    }
+  ]
+}

@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>pm-kit · Agent 调度与能力调用</title>
+  <style>
+    :root {
+      --bg: #f4f5f1;
+      --surface: #ffffff;
+      --ink: #17201d;
+      --muted: #64706b;
+      --line: #ccd3ce;
+      --input: #e8f1ff;
+      --input-border: #8eb4eb;
+      --process: #eee9ff;
+      --process-border: #9d8ada;
+      --workflow: #fff4d9;
+      --workflow-border: #dfaa3d;
+      --quality: #ffe7e2;
+      --quality-border: #d97a68;
+      --output: #e5f6ec;
+      --output-border: #72b68b;
+      --context: #17201d;
+      --context-text: #ffffff;
+      --shadow: 0 12px 32px rgba(23, 32, 29, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .page {
+      width: min(1580px, calc(100% - 40px));
+      margin: 28px auto 60px;
+    }
+
+    header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(27px, 3vw, 46px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .version {
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--muted);
+      font-size: 12px;
+      border: 1px solid var(--line);
+    }
+
+    .dot { width: 9px; height: 9px; border-radius: 50%; }
+
+    .board {
+      position: relative;
+      overflow-x: auto;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background:
+        linear-gradient(rgba(23, 32, 29, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 32, 29, 0.025) 1px, transparent 1px),
+        rgba(255, 255, 255, 0.72);
+      background-size: 24px 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .diagram {
+      min-width: 1440px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .layer-label {
+      display: grid;
+      grid-template-columns: 104px 1fr;
+      align-items: center;
+      gap: 14px;
+      min-height: 24px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .layer-label::after {
+      content: "";
+      height: 1px;
+      background: var(--line);
+    }
+
+    .input-row,
+    .catalog-row,
+    .output-row {
+      display: grid;
+      gap: 12px;
+    }
+
+    .input-row { grid-template-columns: repeat(5, 1fr); }
+    .catalog-row { grid-template-columns: repeat(4, 1fr); }
+    .output-row { grid-template-columns: repeat(6, 1fr); }
+
+    .node {
+      min-width: 0;
+      border: 1px solid;
+      border-radius: 14px;
+      padding: 13px 14px;
+      background: var(--surface);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    button.node {
+      width: 100%;
+      text-align: left;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button.node:hover,
+    button.node:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 9px 22px rgba(23, 32, 29, 0.10);
+      outline: none;
+    }
+
+    .node small {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .node p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .input { background: var(--input); border-color: var(--input-border); }
+    .process { background: var(--process); border-color: var(--process-border); }
+    .workflow { background: var(--workflow); border-color: var(--workflow-border); }
+    .quality { background: var(--quality); border-color: var(--quality-border); }
+    .output { background: var(--output); border-color: var(--output-border); }
+
+    .down-arrow {
+      width: 2px;
+      height: 23px;
+      margin: -2px auto;
+      background: var(--ink);
+      position: relative;
+      opacity: 0.72;
+    }
+
+    .down-arrow::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -1px;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .wide-node {
+      display: grid;
+      grid-template-columns: 175px 1fr 240px;
+      align-items: center;
+      gap: 18px;
+      padding: 16px 18px;
+    }
+
+    .wide-node .title strong { font-size: 16px; }
+    .wide-node .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .pill {
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid currentColor;
+    }
+
+    .wide-node .rule {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+      text-align: right;
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .workflow-grid .arrow { display: none; }
+
+    .entry-stack {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .arrow {
+      position: relative;
+      align-self: center;
+      height: 2px;
+      background: var(--ink);
+      opacity: 0.72;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--ink);
+      border-top: 2px solid var(--ink);
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .w6-wrap {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 8px;
+    }
+
+    .branch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .branch div {
+      border-radius: 9px;
+      padding: 7px 6px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(152, 105, 12, 0.28);
+      font-size: 9px;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .branch b { display: block; font-size: 10px; margin-bottom: 2px; }
+
+    .entry-note {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px dashed var(--workflow-border);
+      background: rgba(255, 244, 217, 0.56);
+      color: #725817;
+      font-size: 11px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .quality-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .context-loop {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      background: var(--context);
+      color: var(--context-text);
+    }
+
+    .context-loop strong { display: block; margin-bottom: 4px; font-size: 14px; }
+    .context-loop p { margin: 0; color: rgba(255,255,255,.68); font-size: 11px; line-height: 1.55; }
+    .context-loop .loop-arrow { font-size: 24px; color: #b9e4ca; }
+    .context-loop .right { text-align: right; }
+
+    .detail-panel {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 170px 1fr;
+      gap: 18px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: #111815;
+      color: white;
+    }
+
+    .detail-panel .eyebrow {
+      color: #a7b1ac;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .detail-panel h2 { margin: 5px 0 0; font-size: 16px; }
+    .detail-panel p { margin: 0; color: #c6ceca; font-size: 12px; line-height: 1.65; }
+
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .note {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .note strong { display: block; margin-bottom: 5px; font-size: 13px; }
+    .note p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+
+    @media (max-width: 760px) {
+      .page { width: min(100% - 20px, 1580px); margin-top: 16px; }
+      header { align-items: flex-start; flex-direction: column; }
+      .board { padding: 14px; border-radius: 16px; }
+      .notes { grid-template-columns: 1fr; }
+      .detail-panel { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: white; }
+      .page { width: 100%; margin: 0; }
+      .board { box-shadow: none; overflow: visible; }
+      .diagram { transform: scale(.72); transform-origin: top left; width: 138%; }
+      .detail-panel, .notes { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <h1>pm-kit · Agent 调度与能力调用</h1>
+        <p class="subtitle">当前 Agent 读取唯一入口，按目标从能力清单选择流程；阶段产物交接后可重新编排。内嵌专项模块只在选中时加载。</p>
+      </div>
+      <div class="version">v0.6 · 2026-10-14</div>
+    </header>
+
+    <div class="legend" aria-label="图例">
+      <span><i class="dot" style="background:var(--input-border)"></i>输入</span>
+      <span><i class="dot" style="background:var(--process-border)"></i>解析与调度</span>
+      <span><i class="dot" style="background:var(--workflow-border)"></i>工作流</span>
+      <span><i class="dot" style="background:var(--quality-border)"></i>质量门禁</span>
+      <span><i class="dot" style="background:var(--output-border)"></i>交付物</span>
+    </div>
+
+    <section class="board">
+      <div class="diagram">
+        <div class="layer-label">01 · Inputs</div>
+        <div class="input-row">
+          <button class="node input" data-title="截图与图片" data-detail="提取可观察的结构、视觉、文案和交互线索；业务规则、权限和后端逻辑只能作为待确认推断。">
+            <small>Visual</small><strong>截图与图片</strong><p>界面截图、流程图、设计稿、参考图</p>
+          </button>
+          <button class="node input" data-title="HTML 与代码" data-detail="读取入口文件及其本地依赖，检查 DOM、CSS、JavaScript、状态和资源；修改时保留原始文件。">
+            <small>Executable</small><strong>HTML 与前端代码</strong><p>现有页面、原型、组件和样式</p>
+          </button>
+          <button class="node input" data-title="文档材料" data-detail="提取目标、用户、功能、规则、流程、数据、权限、验收和未决事项，保留版本、日期和关键数字。">
+            <small>Documents</small><strong>文档材料</strong><p>PRD、纪要、研究、反馈、规范</p>
+          </button>
+          <button class="node input" data-title="文字与对话" data-detail="识别当前明确要求、已确认决策、被否定方案和新增限制；零散信息会先整理成任务摘要。">
+            <small>Conversation</small><strong>文字与对话</strong><p>想法、需求、修改意见、决策</p>
+          </button>
+          <button class="node input" data-title="项目与任务定位" data-detail="先查看项目索引中的 ID、名称和路径；确定 project_id 与 task_id 后，才读取对应项目规则和任务记录。">
+            <small>Continuity</small><strong>项目与任务定位</strong><p>ID、目录、产物归属和版本</p>
+          </button>
+        </div>
+
+        <div class="down-arrow" aria-hidden="true"></div>
+
+        <div class="layer-label">02 · Scope &amp; Evidence</div>
+        <button class="node process wide-node" data-title="归属确认与输入解析" data-detail="跨轮任务先确定项目与任务 ID，读取允许使用的规则版本；再建立来源清单，区分事实、观察和推断。归属不明时不打开候选项目的业务内容。">
+          <div class="title"><small>cross-round-protocol.md + input-handling.md</small><strong>归属确认与输入解析</strong></div>
+          <div class="steps"><span class="pill">确定项目/任务</span>→<span class="pill">固定依据版本</span>→<span class="pill">提取事实</span>→<span class="pill">处理冲突</span></div>
+          <div class="rule">当前指令 ＞ 已确认决策 ＞ 正式材料 ＞ 历史产物 ＞ 参考推断</div>
+        </button>
+
+        <div class="down-arrow" aria-hidden="true"></div>
+
+        <div class="layer-label">03 · Route</div>
+        <button class="node process wide-node" data-title="当前 Agent 动态编排" data-detail="Agent 读取 SKILL.md、capabilities/registry.json 与 workflows/recipes.md；从目标产物反推必要能力，检查阶段输入，执行后按产物重新编排。">
+          <div class="title"><small>SKILL.md + registry.json + recipes.md</small><strong>当前 Agent 动态编排</strong></div>
+          <div class="steps"><span class="pill">识别目标</span>→<span class="pill">选能力</span>→<span class="pill">核对交接</span>→<span class="pill">必要时重编</span></div>
+          <div class="rule">只运行交付物需要的节点；计划变化写入上下文</div>
+        </button>
+
+        <button class="node process wide-node" data-title="冲突决策门禁" data-detail="decision-gates.md 识别高保真与重设计、HTML 与 React、局部与全局、速度与完整度等冲突。方向会改变时列出路径和影响，由用户选择。">
+          <div class="title"><small>decision-gates.md</small><strong>冲突决策门禁</strong></div>
+          <div class="steps"><span class="pill">发现冲突</span>→<span class="pill">列出路径</span>→<span class="pill">说明影响</span>→<span class="pill">记录选择</span></div>
+          <div class="rule">不替用户决定方向；已确认路径约束后续节点</div>
+        </button>
+
+        <div class="down-arrow" aria-hidden="true"></div>
+
+        <div class="layer-label">04 · Capability Registry</div>
+        <div class="entry-note">下面是可选能力清单，并非固定执行顺序。Agent 可跳过已有合格产物对应的阶段；如需求不清，先澄清再继续。每完成一阶段，核对产物能否交给下一阶段。</div>
+        <div class="workflow-grid">
+          <div class="entry-stack">
+            <button class="node workflow" data-title="clarify-requirements · 需求澄清" data-detail="仅当目标、范围或业务规则仍存在会改变结果的选择时加入；按依赖关系请用户决策。">
+              <small>clarify-requirements</small><strong>需求澄清</strong><p>事实、决策、未决事项</p>
+            </button>
+            <button class="node workflow" data-title="analyze-input · 材料分析" data-detail="从截图、HTML、文档、反馈和历史版本中提取带来源的事实、推断、冲突和缺口。">
+              <small>analyze-input</small><strong>材料分析</strong><p>事实、冲突、缺口</p>
+            </button>
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+          <button class="node workflow" data-title="plan-product · 产品规划" data-detail="定义目标、MVP、范围、指标、依赖和风险；已有合格方案可直接跳过。">
+            <small>plan-product</small><strong>产品规划</strong><p>MVP、指标、范围、风险</p>
+          </button>
+          <div class="arrow" aria-hidden="true"></div>
+          <button class="node workflow" data-title="write-prd · 日常 PRD" data-detail="基于已确认需求编写或修订 PRD；完整六步流程可改用内嵌的 make-prd 模块。">
+            <small>write-prd</small><strong>PRD</strong><p>生成、审查、修订</p>
+          </button>
+          <div class="arrow" aria-hidden="true"></div>
+          <button class="node workflow" data-title="design-interaction · 交互设计" data-detail="设计页面层级、流程、规格、状态和权限；已有合格页面规格可直接交给原型阶段。">
+            <small>design-interaction</small><strong>交互设计</strong><p>IA、流程、页面、状态</p>
+          </button>
+          <div class="arrow" aria-hidden="true"></div>
+          <div class="node workflow w6-wrap" role="button" tabindex="0" data-title="build-prototype · 原型" data-detail="探索型原型用于比较 UI 或验证业务状态；交付型默认单文件 HTML。只有明确要求工程化时才生成 React。">
+            <div><small>build-prototype</small><strong>原型探索或交付</strong><p>先判断要回答的问题，再选产物</p></div>
+            <div class="branch">
+              <div><b>探索</b>UI 方案 / 状态演示</div>
+              <div><b>交付</b>默认 HTML；明确要求才 React</div>
+            </div>
+          </div>
+          <div class="arrow" aria-hidden="true"></div>
+          <button class="node workflow" data-title="review-validate · 评审验证" data-detail="按用户目标执行产品走查、需求审查、原型验证或验收，输出问题与验证结果。">
+            <small>review-validate</small><strong>评审验证</strong><p>走查、测试、验收、回归</p>
+          </button>
+          <div class="arrow" aria-hidden="true"></div>
+          <button class="node workflow" data-title="deliver-change · 交付与变更" data-detail="组织交付清单与连续项目上下文，记录产物状态、决策和变更影响。">
+            <small>deliver-change</small><strong>交付管理</strong><p>文件、版本、变更、上下文</p>
+          </button>
+        </div>
+        <div class="entry-note">按需加载的内嵌模块：<strong>make-prd</strong>（完整六步 PRD）、<strong>prd-html</strong>（PRD 驱动的多页面原型）、<strong>html-prd</strong>（HTML 反向整理 PRD）、<strong>flowchart-diagram</strong>（流程图/泳道图，draw.io + SVG HTML + 浏览器可用时的 PNG）。选中后读取对应的 `procedure.md`，遵守实际模块的确认要求；只用文字说明流程时无需加载绘图模块。</div>
+
+        <div class="down-arrow" aria-hidden="true"></div>
+
+        <div class="layer-label">05 · Catalog</div>
+        <div class="catalog-row">
+          <button class="node process" data-title="场景库" data-detail="保存行业、角色、任务和约束等场景规则。内置资源提供通用基线，本地资源由使用者持续添加，并通过触发条件参与匹配。">
+            <small>Scenarios</small><strong>场景库</strong><p>行业、角色、目标、约束</p>
+          </button>
+          <button class="node process" data-title="组件库" data-detail="记录组件、设计令牌、平台约束和使用规则。原型生成时只加载与当前平台和交付方式匹配的资源。">
+            <small>Components</small><strong>组件库</strong><p>组件、令牌、平台、规则</p>
+          </button>
+          <button class="node process" data-title="模板库" data-detail="保存 PRD、单文件 HTML、评审报告等交付模板。模板带版本、适用范围和必填字段，可由使用者扩展。">
+            <small>Templates</small><strong>模板库</strong><p>结构、字段、格式、版本</p>
+          </button>
+          <button class="node process" data-title="案例库" data-detail="沉淀脱敏后的输入摘要、关键决策、交付物和可复用模式。案例作为参考证据，不覆盖当前任务事实。">
+            <small>Cases</small><strong>案例库</strong><p>决策、结果、经验、复用模式</p>
+          </button>
+        </div>
+
+        <div class="down-arrow" aria-hidden="true"></div>
+
+        <div class="layer-label">06 · Quality Gate</div>
+        <div class="quality-grid">
+          <button class="node quality" data-title="内容一致性门禁" data-detail="检查目标、范围、流程、页面、业务规则、状态、权限、指标和验收标准是否一致；区分事实、推断和新增方案。">
+            <small>Cross-deliverable</small><strong>内容与决策一致性</strong><p>目标、范围、流程、页面、验收相互对齐</p>
+          </button>
+          <button class="node quality" data-title="产物可用性门禁" data-detail="文档需要回读或渲染；HTML 需要浏览器检查交互和适配；React 需要安装依赖、构建并走关键路径。">
+            <small>Artifact verification</small><strong>文件与运行验证</strong><p>打开、渲染、交互、构建、回归</p>
+          </button>
+        </div>
+
+        <div class="down-arrow" aria-hidden="true"></div>
+
+        <div class="layer-label">07 · Deliverables</div>
+        <div class="output-row">
+          <button class="node output" data-title="对话结论" data-detail="适合短分析、决策建议和下一步；任务较长时同时生成文件，避免重要内容只留在聊天中。">
+            <small>Chat</small><strong>对话结论</strong><p>分析、决策、下一步</p>
+          </button>
+          <button class="node output" data-title="产品文档" data-detail="默认 Markdown；用户明确要求 Word 时生成 DOCX 并做版式检查。包含产品定义、PRD、页面规格或变更说明。">
+            <small>Documents</small><strong>MD / DOCX</strong><p>规划、PRD、规格、变更</p>
+          </button>
+          <button class="node output" data-title="单文件 HTML" data-detail="自包含、可直接打开，覆盖关键流程和状态。适合产品评审、需求确认和快速演示。">
+            <small>Default prototype</small><strong>单文件 HTML</strong><p>评审、演示、交互确认</p>
+          </button>
+          <button class="node output" data-title="React 工程" data-detail="包含组件、页面、路由、模拟接口和运行说明。只有用户明确要求工程化交付时生成。">
+            <small>Explicit request</small><strong>React 工程</strong><p>组件化、开发接手、接口接入</p>
+          </button>
+          <button class="node output" data-title="评审与验收报告" data-detail="包含问题严重度、位置、证据、影响、修复建议和验收方式，也可附测试任务和回归结果。">
+            <small>Review</small><strong>评审与验收</strong><p>问题、证据、修复、回归</p>
+          </button>
+          <button class="node output" data-title="跨轮记录" data-detail="项目级记录共用规则及其版本，产物索引记录依赖；任务级记录每轮计划、决定、验证和断点。">
+            <small>Project &amp; task records</small><strong>规则 / 产物 / 轮次</strong><p>项目隔离、依赖版本、复查状态</p>
+          </button>
+        </div>
+
+        <div class="context-loop">
+          <div><strong>本次交付完成</strong><p>输出文件、验证结果、未决事项和最多三个相关后续选项</p></div>
+          <div class="loop-arrow" aria-hidden="true">↺</div>
+          <div class="right"><strong>后续任务回流</strong><p>下次先确认项目与任务，核对规则及产物版本，从已记录断点继续</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-panel" aria-live="polite">
+      <div><div class="eyebrow">点击图中节点查看</div><h2 id="detail-title">当前调度原则</h2></div>
+      <p id="detail-text">当前 Agent 根据目标和已有材料选择能力。阶段产物交接后可继续、跳过或重新编排；发生方向冲突时由用户选路。</p>
+    </section>
+
+    <section class="notes">
+      <article class="note"><strong>入口方式</strong><p>截图、HTML、文档和文字都进入 pm-kit。当前 Agent 读取唯一 SKILL.md 后开始调度。</p></article>
+      <article class="note"><strong>链路方式</strong><p>能力清单按目标组合；内嵌专项模块按需读取。用户可指定路径，冲突时确认后继续。</p></article>
+      <article class="note"><strong>资源扩展</strong><p>场景、组件、模板和脱敏案例分为内置与本地目录。本地资源可持续新增，通过清单、版本和校验规则参与任务。</p></article>
+    </section>
+  </main>
+
+  <script>
+    const title = document.getElementById('detail-title');
+    const text = document.getElementById('detail-text');
+    document.querySelectorAll('[data-title][data-detail]').forEach((node) => {
+      const show = () => {
+        title.textContent = node.dataset.title;
+        text.textContent = node.dataset.detail;
+      };
+      node.addEventListener('click', show);
+      node.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          show();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

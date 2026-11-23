@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pm-kit eval set",
+  "description": "评测用例集合的统一格式。pm-kit 根目录与每个内嵌模块共用这一份；assertions 不能为空，否则这套评测无法机器判定。",
+  "type": "object",
+  "required": ["skill_name", "evals"],
+  "properties": {
+    "skill_name": { "type": "string", "minLength": 1 },
+    "evals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "prompt", "expected_output", "files", "assertions"],
+        "properties": {
+          "id": { "type": "integer", "minimum": 1 },
+          "name": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "prompt": { "type": "string", "minLength": 1 },
+          "expected_output": { "type": "string", "minLength": 1 },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "expected_files": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^\\S*[./*]\\S*$" },
+            "description": "本轮必须产出的文件，glob 形式、相对工作区（例：**-02-PRD.md）。这是给机器看的硬要求，比 assertions 里的自然语言更可判定。"
+          },
+          "expected_absent_files": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^\\S*[./*]\\S*$" },
+            "description": "本轮不应出现的文件，glob 形式（例：**/package.json，用来钉住“没有创建 React 工程”这类负向断言）。"
+          },
+          "assertions": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

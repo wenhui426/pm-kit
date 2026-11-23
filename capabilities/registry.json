@@ -1,0 +1,123 @@
+﻿{
+  "schema_version": "1.0",
+  "description": "pm-kit 可调度的产品经理能力。instruction 一律相对 pm-kit 根目录解析；能力自己提到的 assets/、references/、design-specs/ 和 scripts/ 相对该能力的 resource_base 解析。新增能力只需在本文件登记，不需要修改 SKILL.md。",
+  "capabilities": [
+    {
+      "id": "analyze-input",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/input-handling.md",
+      "when": "需要从截图、HTML、文档、反馈或旧版本提取事实、冲突与缺口",
+      "accepts": ["用户材料", "已有项目上下文"],
+      "produces": ["带来源的事实与推断清单", "冲突和缺口"]
+    },
+    {
+      "id": "analyze-competitors",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/competitor-analysis.md",
+      "when": "用户要求竞品调研、产品拆解、对标比较或独立竞品报告；只在 PRD 中补充一小段已有的竞品结论时沿用 PRD 流程",
+      "accepts": ["产品名、赛道或待解决的产品问题", "可选的截图、HTML、文档、公开链接或体验记录", "可选的报告模板、格式和本地输出路径"],
+      "produces": ["本地竞品分析文件，默认 Markdown", "带来源的比较或拆解结论、证据缺口和产品建议"]
+    },
+    {
+      "id": "clarify-requirements",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/product-planning.md",
+      "when": "目标、范围、业务规则或领域术语存在会改变结果的未决选择",
+      "accepts": ["用户目标", "材料事实", "待决问题"],
+      "produces": ["已确认的需求简表", "未决事项与假设"]
+    },
+    {
+      "id": "plan-product",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/product-planning.md",
+      "when": "用户需要产品方案、MVP、版本范围、指标或风险判断",
+      "accepts": ["问题定义", "材料事实"],
+      "produces": ["产品方案", "范围和指标"]
+    },
+    {
+      "id": "write-prd",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/prd-workflow.md",
+      "when": "用户需要日常 PRD、需求修订或 PRD 审查，且未要求完整六步流水线",
+      "accepts": ["已确认的范围与规则", "现有 PRD 或产品方案"],
+      "produces": ["PRD 或修订记录"]
+    },
+    {
+      "id": "design-interaction",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/interaction-design.md",
+      "when": "用户需要信息架构、流程、页面规格、状态或权限设计",
+      "accepts": ["已确认的需求", "页面或流程材料"],
+      "produces": ["信息架构与流程", "页面规格和状态矩阵"]
+    },
+    {
+      "id": "build-prototype",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/prototype-html.md",
+      "when": "用户需要探索 UI 或状态问题，或交付可评审的单文件 HTML；明确要求工程时可使用 React",
+      "accepts": ["待验证问题或页面规格", "设计约束"],
+      "produces": ["探索型原型或交付型 HTML/React"]
+    },
+    {
+      "id": "review-validate",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/review-validation.md",
+      "when": "用户要求走查、评审、可用性测试或验收；交付物自带的通用门禁在 SKILL.md 的「执行与质量检查」，不通过本能力加载",
+      "accepts": ["需求、原型或实现", "验收目标"],
+      "produces": ["分级问题清单", "验证和验收结果"]
+    },
+    {
+      "id": "deliver-change",
+      "kind": "internal-procedure",
+      "resource_base": ".",
+      "instruction": "references/delivery-standards.md",
+      "when": "需要整理多项交付物、保存连续项目状态或处理变更影响",
+      "accepts": ["已完成的产物", "本轮决策与变更"],
+      "produces": ["交付清单", "项目上下文与影响记录"]
+    },
+    {
+      "id": "make-prd",
+      "kind": "bundled-module",
+      "resource_base": "modules/make-prd",
+      "instruction": "modules/make-prd/procedure.md",
+      "when": "用户点名 make-prd，或明确需要从产品定型到 PRD 审查修订的完整六步流程，并接受逐阶段确认",
+      "accepts": ["想法和材料", "用户指定的项目目录与版本信息"],
+      "produces": ["产品规划文档", "完整 PRD", "审查与修订记录"]
+    },
+    {
+      "id": "prd-html",
+      "kind": "bundled-module",
+      "resource_base": "modules/prd-html",
+      "instruction": "modules/prd-html/procedure.md",
+      "when": "用户点名 prd-html，或需要持续维护页面规格、设计规范与逐页验收的多页面原型；仅页面较多或只要单文件时不自动选用，自动匹配须先告知目录与确认节奏",
+      "accepts": ["已确认 PRD 或需求", "用户指定的原型目录和视觉规范"],
+      "produces": ["页面规格", "多页面 HTML", "可离线打开的汇总 HTML"]
+    },
+    {
+      "id": "flowchart-diagram",
+      "kind": "bundled-module",
+      "resource_base": "modules/flowchart-diagram",
+      "instruction": "modules/flowchart-diagram/procedure.md",
+      "when": "用户点名 flowchart-diagram，或需要独立的普通流程图、泳道图、矩阵泳道、跨角色审批图及可编辑 draw.io 文件；仅文字流程或简短 Mermaid 不自动调用",
+      "accepts": ["业务流程描述、PRD 或交互规格", "角色、分支规则与输出格式要求"],
+      "produces": ["draw.io 可编辑流程图", "自包含 SVG HTML", "浏览器可用时的高清 PNG", "业务来源与验证记录"]
+    },
+    {
+      "id": "html-prd",
+      "kind": "bundled-module",
+      "resource_base": "modules/html-prd",
+      "instruction": "modules/html-prd/procedure.md",
+      "when": "用户点名 html-prd，或提供可读取的现有 HTML 并要求反向整理 PRD",
+      "accepts": ["现有 HTML 及本地依赖", "补充说明"],
+      "produces": ["基于现有页面的 PRD 或产品方案"]
+    }
+  ]
+}

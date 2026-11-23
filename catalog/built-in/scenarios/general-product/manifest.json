@@ -1,0 +1,16 @@
+{
+  "kind": "scenario",
+  "id": "built-in:general-product",
+  "name": "通用数字产品",
+  "version": "1.0.0",
+  "status": "active",
+  "extends": [],
+  "triggers": ["产品设计", "功能设计", "后台系统", "移动产品", "网页产品"],
+  "platforms": ["web", "mobile", "cross-platform"],
+  "capabilities": ["问题定义", "产品规划", "PRD", "信息架构", "用户流程", "异常状态", "验收"],
+  "files": {
+    "planning": "../../../../references/product-planning.md",
+    "interaction": "../../../../references/interaction-design.md",
+    "validation": "../../../../references/review-validation.md"
+  }
+}

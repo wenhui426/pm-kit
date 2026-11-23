@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pm-kit Workflow Plan",
+  "type": "object",
+  "required": ["task_mode", "execution_depth", "goal", "steps", "deliverables"],
+  "properties": {
+    "project_id": { "type": "string", "minLength": 1 },
+    "task_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "baseline_version": { "type": "integer", "minimum": 1 },
+    "task_mode": { "enum": ["analysis", "planning", "prd", "interaction", "prototype", "review", "redesign", "change", "delivery"] },
+    "prototype_mode": { "enum": ["delivery", "exploration", null] },
+    "execution_depth": { "enum": ["rapid", "standard", "strict"] },
+    "goal": { "type": "string", "minLength": 1 },
+    "project_maturity": { "enum": ["idea", "defined", "specified", "prototyped", "implemented"] },
+    "inputs": { "type": "array", "items": { "type": "string" } },
+    "constraints": { "type": "array", "items": { "type": "string" } },
+    "current_capability": { "type": "string" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "purpose", "status"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
+          "purpose": { "type": "string" },
+          "status": { "enum": ["planned", "running", "done", "skipped"] },
+          "inputs": { "type": "array", "items": { "type": "string" } },
+          "outputs": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "decision_gates": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "scenarios": { "type": "array", "maxItems": 2 },
+        "component_libraries": { "type": "array", "maxItems": 1 },
+        "templates": { "type": "array", "maxItems": 1 },
+        "cases": { "type": "array", "maxItems": 1 }
+      }
+    },
+    "deliverables": { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+  },
+  "additionalProperties": true
+}

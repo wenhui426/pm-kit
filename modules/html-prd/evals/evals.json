@@ -1,0 +1,63 @@
+{
+  "skill_name": "html-prd",
+  "evals": [
+    {
+      "id": 1,
+      "name": "must-offer-all-three-output-options",
+      "prompt": "把这个原型整理成 PRD。文件在 evals/files/sample-prototype.html。",
+      "files": ["evals/files/sample-prototype.html"],
+      "expected_output": "完整列出三种输出方式（仅 PRD.md / 仅 HTML 评审版 / 两者都要）并等用户选择；不设置默认值、不沿用上次选择。",
+      "assertions": [
+        "完整写出“仅 PRD.md / 仅 HTML 评审版 / Markdown 与 HTML 都要”三种输出方式，没有用简称代替",
+        "没有设置默认输出方式，也没有沿用上次任务的选择",
+        "在用户确认输出方式之前没有生成正式产物",
+        "确认了输入 HTML 路径可读，并指出本模块需要已有 HTML",
+        "说明了正式产物放在输出目录根部、过程记录放在 过程记录/ 且交付后保留"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "must-offer-all-review-layouts",
+      "prompt": "把 evals/files/sample-prototype.html 整理成 PRD 和 HTML 评审版。",
+      "files": ["evals/files/sample-prototype.html"],
+      "expected_output": "选择包含 HTML 时，完整列出并列可调、聚焦抽屉、两种布局都要三种选项并等确认；同时确认输出目录与三份模板路径。",
+      "assertions": [
+        "完整列出“并列可调 / 聚焦抽屉 / 两种布局都要”三种选项",
+        "没有自行指定默认布局，也没有沿用上次的布局选择",
+        "就输出目录向用户确认，没有自行选择目录",
+        "确认了逐页说明、Markdown、HTML 三份模板的路径",
+        "说明两种布局同时生成时的文件命名规则"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "per-page-confirmation-and-source-protection",
+      "prompt": "把 evals/files/sample-prototype.html 整理成 PRD.md，输出到 E:\\project\\prd-review。只要 Markdown。",
+      "files": ["evals/files/sample-prototype.html"],
+      "expected_output": "采用本轮明确的仅 Markdown 输出方式和目录，不重复确认；先展示页面清单等确认，再逐页生成说明并逐页确认；过程记录写入 progress.json、页面清单.md、pages/；未确认的草稿不得标为已确认；不修改源 HTML。",
+      "assertions": [
+        "直接采用本轮已明确的仅 Markdown 输出方式，不重复列出 HTML 布局或等待二次确认",
+        "先展示页面清单和处理顺序，等用户确认后才逐页生成",
+        "每次只处理一个页面，用户没确认前不处理下一页",
+        "过程记录包含 progress.json、页面清单.md 和 pages/ 目录",
+        "没有把未确认的草稿标为已确认",
+        "源 HTML 及其依赖文件没有被修改"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "external-resources-block-single-file",
+      "prompt": "把 evals/files/prototype-with-cdn.html 整理成 HTML 评审版，输出方式就选 HTML 评审版。",
+      "files": ["evals/files/prototype-with-cdn.html"],
+      "expected_output": "开工后发现原型依赖外部 CDN，无法直接内联成自包含单文件：停下来告知用户这个阻塞，给出「先改成内联资源」与「改用外部引用模式（需同源本地预览）」两条可执行路径并等用户选择，不产出缺资源的半成品。这是最容易被跳过的一条路径——原型有 hash 路由、结构完整，只有样式和脚本指向 CDN。",
+      "expected_absent_files": ["**/PRD评审版*.html"],
+      "assertions": [
+        "识别出原型引用了外部 CDN 资源，无法直接内联成自包含单文件",
+        "明确告知用户这个阻塞点，并说明原因（外部依赖无法可靠离线使用）",
+        "给出「先改成内联资源」和「改用外部引用模式」两条可执行路径，等用户选择",
+        "没有生成缺资源的半成品单文件，也没有声称已经完成单文件化",
+        "没有运行来源不明的下载或安装命令去获取这些外部资源"
+      ]
+    }
+  ]
+}

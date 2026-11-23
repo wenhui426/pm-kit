@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pm-kit Case Package",
+  "type": "object",
+  "required": ["kind", "id", "name", "version", "status", "triggers", "summary", "modes", "inputs_summary", "decisions", "deliverables", "reusable_patterns", "sensitive_data_removed", "files"],
+  "properties": {
+    "kind": { "const": "case" },
+    "id": { "type": "string", "pattern": "^(built-in|local):[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "status": { "enum": ["draft", "reviewed", "active", "deprecated"] },
+    "extends": { "type": "array", "items": { "type": "string" }, "maxItems": 1, "default": [] },
+    "triggers": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "summary": { "type": "string" },
+    "applicable_scenarios": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "modes": { "type": "array", "items": { "type": "string" } },
+    "inputs_summary": { "type": "array", "items": { "type": "string" } },
+    "decisions": { "type": "array", "items": { "type": "string" } },
+    "deliverables": { "type": "array", "items": { "type": "string" } },
+    "reusable_patterns": { "type": "array", "items": { "type": "string" } },
+    "sensitive_data_removed": { "const": true },
+    "files": { "type": "object", "additionalProperties": { "type": "string" }, "minProperties": 1 }
+  },
+  "additionalProperties": true
+}

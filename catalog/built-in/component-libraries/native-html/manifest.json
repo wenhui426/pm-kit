@@ -1,0 +1,17 @@
+{
+  "kind": "component-library",
+  "id": "built-in:native-html",
+  "name": "原生单文件 HTML",
+  "version": "1.0.0",
+  "status": "active",
+  "extends": [],
+  "triggers": ["单文件 HTML", "可直接打开", "无构建原型", "评审原型"],
+  "platforms": ["web"],
+  "frameworks": ["html", "css", "javascript"],
+  "package_names": [],
+  "capabilities": ["离线打开", "模拟数据", "视图切换", "表单交互", "响应式"],
+  "files": {
+    "prototype_rules": "../../../../references/prototype-html.md",
+    "interaction_rules": "../../../../references/interaction-design.md"
+  }
+}

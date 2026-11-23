@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pm-kit.local/schemas/project-records.schema.json",
+  "title": "pm-kit cross-round records v1.0",
+  "anyOf": [
+    { "$ref": "#/$defs/projects" },
+    { "$ref": "#/$defs/project" },
+    { "$ref": "#/$defs/task" },
+    { "$ref": "#/$defs/businessRules" },
+    { "$ref": "#/$defs/artifactIndex" },
+    { "$ref": "#/$defs/run" }
+  ],
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "pattern": "^[^\\s/\\\\]+$" },
+    "text": { "type": "string", "minLength": 1 },
+    "dateTime": { "type": "string", "format": "date-time" },
+    "version": { "type": "integer", "minimum": 1 },
+    "ruleRef": {
+      "type": "object",
+      "required": ["rule_id", "revision"],
+      "properties": {
+        "rule_id": { "$ref": "#/$defs/id" },
+        "revision": { "$ref": "#/$defs/version" }
+      },
+      "additionalProperties": true
+    },
+    "artifactRef": {
+      "type": "object",
+      "required": ["artifact_id", "version"],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/id" },
+        "version": { "$ref": "#/$defs/version" }
+      },
+      "additionalProperties": true
+    },
+    "decision": {
+      "type": "object",
+      "required": ["id", "topic", "choice", "reason"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "topic": { "$ref": "#/$defs/text" },
+        "choice": { "$ref": "#/$defs/text" },
+        "reason": { "$ref": "#/$defs/text" },
+        "confirmed_by": { "type": ["string", "null"] },
+        "confirmed_at": { "anyOf": [{ "$ref": "#/$defs/dateTime" }, { "type": "null" }] },
+        "affected_deliverables": { "type": "array", "items": { "$ref": "#/$defs/text" } }
+      },
+      "additionalProperties": true
+    },
+    "projects": {
+      "type": "object",
+      "required": ["schema_version", "projects"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["project_id", "name", "path"],
+            "properties": {
+              "project_id": { "$ref": "#/$defs/id" },
+              "name": { "$ref": "#/$defs/text" },
+              "path": { "$ref": "#/$defs/text" }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "project": {
+      "type": "object",
+      "required": ["schema_version", "project_id", "name", "baseline_version", "status", "updated_at"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "project_id": { "$ref": "#/$defs/id" },
+        "name": { "$ref": "#/$defs/text" },
+        "baseline_version": { "$ref": "#/$defs/version" },
+        "status": { "enum": ["active", "paused", "completed", "archived"] },
+        "glossary_path": { "type": ["string", "null"] },
+        "updated_at": { "$ref": "#/$defs/dateTime" }
+      },
+      "additionalProperties": true
+    },
+    "task": {
+      "type": "object",
+      "required": ["schema_version", "project_id", "task_id", "goal", "baseline_version", "status", "current_stage", "confirmed_decisions", "open_questions", "latest_run_id"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "project_id": { "$ref": "#/$defs/id" },
+        "task_id": { "$ref": "#/$defs/id" },
+        "goal": { "$ref": "#/$defs/text" },
+        "baseline_version": { "$ref": "#/$defs/version" },
+        "status": { "enum": ["planned", "in_progress", "waiting", "completed", "cancelled"] },
+        "current_stage": { "type": ["string", "null"] },
+        "glossary_path": { "type": ["string", "null"] },
+        "confirmed_decisions": { "type": "array", "items": { "$ref": "#/$defs/decision" } },
+        "open_questions": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+        "latest_run_id": { "anyOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] }
+      },
+      "additionalProperties": true
+    },
+    "rule": {
+      "type": "object",
+      "required": ["rule_id", "revision", "kind", "statement", "scope", "source", "status", "confirmed_by", "confirmed_at", "supersedes"],
+      "properties": {
+        "rule_id": { "$ref": "#/$defs/id" },
+        "revision": { "$ref": "#/$defs/version" },
+        "kind": { "enum": ["requirement", "observation", "assumption"] },
+        "statement": { "$ref": "#/$defs/text" },
+        "scope": { "$ref": "#/$defs/text" },
+        "source": {
+          "type": "object",
+          "required": ["type", "detail"],
+          "properties": {
+            "type": { "enum": ["user", "file", "observation", "other"] },
+            "detail": { "$ref": "#/$defs/text" },
+            "path": { "type": "string" },
+            "location": { "type": "string" },
+            "date": { "type": "string", "format": "date" }
+          },
+          "additionalProperties": true
+        },
+        "status": { "enum": ["unconfirmed", "confirmed", "superseded"] },
+        "confirmed_by": { "type": ["string", "null"] },
+        "confirmed_at": { "anyOf": [{ "$ref": "#/$defs/dateTime" }, { "type": "null" }] },
+        "supersedes": { "anyOf": [{ "$ref": "#/$defs/ruleRef" }, { "type": "null" }] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "confirmed" } }, "required": ["status"] },
+          "then": { "properties": { "confirmed_by": { "$ref": "#/$defs/text" }, "confirmed_at": { "$ref": "#/$defs/dateTime" } } }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "businessRules": {
+      "type": "object",
+      "required": ["schema_version", "project_id", "task_id", "rules"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "project_id": { "$ref": "#/$defs/id" },
+        "task_id": { "anyOf": [{ "$ref": "#/$defs/id" }, { "type": "null" }] },
+        "rules": { "type": "array", "items": { "$ref": "#/$defs/rule" } }
+      },
+      "additionalProperties": true
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["artifact_id", "task_id", "type", "path", "version", "status", "freshness", "depends_on_rules", "depends_on_artifacts", "checks", "updated_at"],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/id" },
+        "task_id": { "$ref": "#/$defs/id" },
+        "type": { "$ref": "#/$defs/text" },
+        "path": { "$ref": "#/$defs/text" },
+        "version": { "$ref": "#/$defs/version" },
+        "status": { "enum": ["draft", "reviewed", "approved", "superseded"] },
+        "freshness": { "enum": ["current", "needs_review"] },
+        "depends_on_rules": { "type": "array", "items": { "$ref": "#/$defs/ruleRef" } },
+        "depends_on_artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifactRef" } },
+        "checks": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+        "updated_at": { "$ref": "#/$defs/dateTime" },
+        "content_hash": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "artifactIndex": {
+      "type": "object",
+      "required": ["schema_version", "project_id", "artifacts"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "project_id": { "$ref": "#/$defs/id" },
+        "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } }
+      },
+      "additionalProperties": true
+    },
+    "run": {
+      "type": "object",
+      "required": ["schema_version", "project_id", "task_id", "run_id", "goal", "baseline_version", "input_artifacts", "capabilities", "decisions", "changed_files", "checks", "open_questions", "current_stage", "next_step"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "project_id": { "$ref": "#/$defs/id" },
+        "task_id": { "$ref": "#/$defs/id" },
+        "run_id": { "$ref": "#/$defs/id" },
+        "goal": { "$ref": "#/$defs/text" },
+        "baseline_version": { "$ref": "#/$defs/version" },
+        "input_artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifactRef" } },
+        "capabilities": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "decisions": { "type": "array", "items": { "$ref": "#/$defs/decision" } },
+        "changed_files": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+        "checks": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+        "open_questions": { "type": "array", "items": { "$ref": "#/$defs/text" } },
+        "current_stage": { "type": ["string", "null"] },
+        "next_step": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    }
+  }
+}

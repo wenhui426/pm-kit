@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "pm-kit Template Package",
+  "type": "object",
+  "required": ["kind", "id", "name", "version", "status", "triggers", "output_type", "formats", "applies_to", "required_fields", "files"],
+  "properties": {
+    "kind": { "const": "template" },
+    "id": { "type": "string", "pattern": "^(built-in|local):[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "status": { "enum": ["draft", "reviewed", "active", "deprecated"] },
+    "extends": { "type": "array", "items": { "type": "string" }, "maxItems": 1, "default": [] },
+    "triggers": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "output_type": { "type": "string" },
+    "formats": { "type": "array", "items": { "type": "string" } },
+    "applies_to": { "type": "array", "items": { "type": "string" } },
+    "required_fields": { "type": "array", "items": { "type": "string" } },
+    "files": { "type": "object", "additionalProperties": { "type": "string" }, "minProperties": 1 }
+  },
+  "additionalProperties": true
+}
